@@ -41,6 +41,7 @@ export default function BoardView({ board, sortMode, onOpenTask, onChangeSortMod
             >
             <MenuItem value="priority">Priority</MenuItem>
             <MenuItem value="tag">Tag</MenuItem>
+            <MenuItem value="title">Title</MenuItem>
             </TextField>
         </Box>
 

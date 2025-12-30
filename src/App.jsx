@@ -151,6 +151,7 @@ export default function App() {
       <BoardView
         board={activeBoard}
         sortMode={sortMode}
+        onChangeSortMode={setSortMode} 
         onOpenTask={(task) => {
           setSelectedTask(task);
           setOpenTaskModal(true);

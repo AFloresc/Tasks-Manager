@@ -25,6 +25,10 @@ export default function BoardColumn({ title, tasks, status, sortMode, onOpenTask
         });
         }
 
+        if (mode === "title") {
+        return [...tasks].sort((a, b) => a.title.localeCompare(b.title));
+        }
+
         return tasks;
     };
 
