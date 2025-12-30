@@ -8,29 +8,89 @@ import TaskModal from "./components/TaskModal";
 
 // Mock inicial
 const initialBoards = [
-  {
-    id: "b1",
-    name: "Design Board",
-    icon: "🎨",
-    tasks: [
-      { id: "t1", title: "Investigate Framer Motion", tags: ["Concept"], status: "backlog" },
-      { id: "t2", title: "Implement CRUD operations", tags: ["Technical"], status: "backlog" },
-      { id: "t3", title: "Edit tasks", tags: ["Technical", "Front-end"], status: "inProgress" },
-      { id: "t4", title: "View subset of tasks", tags: ["Technical", "Front-end"], status: "inProgress" },
-      { id: "t5", title: "Delete tasks", tags: ["Technical", "Front-end"], status: "inReview" },
-      { id: "t6", title: "Add tasks", tags: ["Technical", "Front-end"], status: "inReview" },
-      { id: "t7", title: "Basic App structure", tags: ["Technical", "Front-end"], status: "completed" },
-      { id: "t8", title: "Design Todo App", tags: ["Design"], status: "completed" }
+      {
+        id: "b1",
+        name: "Design Board",
+        icon: "🎨",
+        tasks: [
+      {
+        id: "t1",
+        title: "Investigate Framer Motion",
+        tags: ["Concept"],
+        status: "backlog",
+        priority: "low"
+      },
+      {
+        id: "t2",
+        title: "Implement CRUD operations",
+        tags: ["Technical"],
+        status: "backlog",
+        priority: "critical"
+      },
+      {
+        id: "t3",
+        title: "Edit tasks",
+        tags: ["Technical", "Front-end"],
+        status: "inProgress",
+        priority: "high"
+      },
+      {
+        id: "t4",
+        title: "View subset of tasks",
+        tags: ["Technical", "Front-end"],
+        status: "inProgress",
+        priority: "normal"
+      },
+      {
+        id: "t5",
+        title: "Delete tasks",
+        tags: ["Technical", "Front-end"],
+        status: "inReview",
+        priority: "high"
+      },
+      {
+        id: "t6",
+        title: "Add tasks",
+        tags: ["Technical", "Front-end"],
+        status: "inReview",
+        priority: "normal"
+      },
+      {
+        id: "t7",
+        title: "Basic App structure",
+        tags: ["Technical", "Front-end"],
+        status: "completed",
+        priority: "high"
+      },
+      {
+        id: "t8",
+        title: "Design Todo App",
+        tags: ["Design"],
+        status: "completed",
+        priority: "low"
+      }
     ]
-  },
-  {
-    id: "b2",
-    name: "Learning Board",
-    icon: "📚",
-    tasks: [
-      { id: "t9", title: "Learn Zustand", tags: ["Technical"], status: "backlog" },
-      { id: "t10", title: "Practice TypeScript", tags: ["Technical"], status: "inProgress" }
-    ]
+    },
+    {
+      id: "b2",
+      name: "Learning Board",
+      icon: "📚",
+      tasks: [
+    {
+      id: "t9",
+      title: "Learn Zustand",
+      tags: ["Technical"],
+      status: "backlog",
+      priority: "high"
+    },
+    {
+      id: "t10",
+      title: "Practice TypeScript",
+      tags: ["Technical"],
+      status: "inProgress",
+      priority: "normal"
+    }
+  ]
   }
 ];
 

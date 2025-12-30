@@ -1,6 +1,21 @@
 import { Card, CardContent, Typography, Chip, Stack } from "@mui/material";
 
 export default function TaskCard({ task, onClick }) {
+    const getPriorityColor = (priority) => {
+        switch (priority) {
+        case "critical":
+            return "#d32f2f"; // rojo fuerte
+        case "high":
+            return "#f57c00"; // naranja
+        case "normal":
+            return "#0288d1"; // azul
+        case "low":
+            return "#757575"; // gris
+        default:
+            return "#9e9e9e";
+        }
+    };
+
     return (
         <Card
         onClick={onClick}
@@ -20,6 +35,20 @@ export default function TaskCard({ task, onClick }) {
             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
             {task.title}
             </Typography>
+
+            {/* Priority */}
+            <Chip
+            label={task.priority}
+            size="small"
+            sx={{
+                textTransform: "capitalize",
+                backgroundColor: getPriorityColor(task.priority),
+                color: "white",
+                fontWeight: 600,
+                fontSize: "0.7rem",
+                alignSelf: "flex-start"
+            }}
+            />
 
             {/* Tags */}
             <Stack direction="row" spacing={1} flexWrap="wrap">
