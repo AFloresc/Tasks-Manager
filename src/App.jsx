@@ -1,35 +1,112 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import { Box } from "@mui/material";
 
-function App() {
-  const [count, setCount] = useState(0)
+import SidebarBoards from "./components/SideBarBoards";
+import NewBoardModal from "./components/NewBoardModal";
+import BoardView from "./components/BoardView";
+import TaskModal from "./components/TaskModal";
+
+// Mock inicial
+const initialBoards = [
+  {
+    id: "b1",
+    name: "Design Board",
+    icon: "🎨",
+    tasks: [
+      { id: "t1", title: "Investigate Framer Motion", tags: ["Concept"], status: "backlog" },
+      { id: "t2", title: "Implement CRUD operations", tags: ["Technical"], status: "backlog" },
+      { id: "t3", title: "Edit tasks", tags: ["Technical", "Front-end"], status: "inProgress" },
+      { id: "t4", title: "View subset of tasks", tags: ["Technical", "Front-end"], status: "inProgress" },
+      { id: "t5", title: "Delete tasks", tags: ["Technical", "Front-end"], status: "inReview" },
+      { id: "t6", title: "Add tasks", tags: ["Technical", "Front-end"], status: "inReview" },
+      { id: "t7", title: "Basic App structure", tags: ["Technical", "Front-end"], status: "completed" },
+      { id: "t8", title: "Design Todo App", tags: ["Design"], status: "completed" }
+    ]
+  },
+  {
+    id: "b2",
+    name: "Learning Board",
+    icon: "📚",
+    tasks: [
+      { id: "t9", title: "Learn Zustand", tags: ["Technical"], status: "backlog" },
+      { id: "t10", title: "Practice TypeScript", tags: ["Technical"], status: "inProgress" }
+    ]
+  }
+];
+
+export default function App() {
+  const [boards, setBoards] = useState(initialBoards);
+  const [activeBoardId, setActiveBoardId] = useState("b1");
+
+  const [openNewBoard, setOpenNewBoard] = useState(false);
+
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [openTaskModal, setOpenTaskModal] = useState(false);
+
+  const activeBoard = boards.find((b) => b.id === activeBoardId);
+
+  // Crear nuevo board
+  const handleCreateBoard = ({ name, icon }) => {
+    const newBoard = {
+      id: crypto.randomUUID(),
+      name,
+      icon,
+      tasks: []
+    };
+
+    setBoards([...boards, newBoard]);
+    setActiveBoardId(newBoard.id);
+  };
+
+  // Guardar cambios en una tarea
+  const handleSaveTask = (updatedTask) => {
+    setBoards((prevBoards) =>
+      prevBoards.map((board) =>
+        board.id === activeBoardId
+          ? {
+              ...board,
+              tasks: board.tasks.map((t) =>
+                t.id === updatedTask.id ? updatedTask : t
+              )
+            }
+          : board
+      )
+    );
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Box sx={{ display: "flex", height: "100vh" }}>
+      {/* Sidebar */}
+      <SidebarBoards
+        boards={boards}
+        activeBoardId={activeBoardId}
+        onSelectBoard={setActiveBoardId}
+        onOpenNewBoard={() => setOpenNewBoard(true)}
+      />
 
-export default App
+      {/* Vista del board activo */}
+      <BoardView
+        board={activeBoard}
+        onOpenTask={(task) => {
+          setSelectedTask(task);
+          setOpenTaskModal(true);
+        }}
+      />
+
+      {/* Modal: Crear nuevo board */}
+      <NewBoardModal
+        open={openNewBoard}
+        onClose={() => setOpenNewBoard(false)}
+        onCreate={handleCreateBoard}
+      />
+
+      {/* Modal: Editar tarea */}
+      <TaskModal
+        open={openTaskModal}
+        task={selectedTask}
+        onClose={() => setOpenTaskModal(false)}
+        onSave={handleSaveTask}
+      />
+    </Box>
+  );
+}
