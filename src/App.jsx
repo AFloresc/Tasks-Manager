@@ -8,11 +8,11 @@ import TaskModal from "./components/TaskModal";
 
 // Mock inicial
 const initialBoards = [
-      {
-        id: "b1",
-        name: "Design Board",
-        icon: "🎨",
-        tasks: [
+  {
+    id: "b1",
+    name: "Design Board",
+    icon: "🎨",
+    tasks: [
       {
         id: "t1",
         title: "Investigate Framer Motion",
@@ -70,27 +70,27 @@ const initialBoards = [
         priority: "low"
       }
     ]
-    },
-    {
-      id: "b2",
-      name: "Learning Board",
-      icon: "📚",
-      tasks: [
-    {
-      id: "t9",
-      title: "Learn Zustand",
-      tags: ["Technical"],
-      status: "backlog",
-      priority: "high"
-    },
-    {
-      id: "t10",
-      title: "Practice TypeScript",
-      tags: ["Technical"],
-      status: "inProgress",
-      priority: "normal"
-    }
-  ]
+  },
+  {
+    id: "b2",
+    name: "Learning Board",
+    icon: "📚",
+    tasks: [
+      {
+        id: "t9",
+        title: "Learn Zustand",
+        tags: ["Technical"],
+        status: "backlog",
+        priority: "high"
+      },
+      {
+        id: "t10",
+        title: "Practice TypeScript",
+        tags: ["Technical"],
+        status: "inProgress",
+        priority: "normal"
+      }
+    ]
   }
 ];
 
@@ -102,6 +102,9 @@ export default function App() {
 
   const [selectedTask, setSelectedTask] = useState(null);
   const [openTaskModal, setOpenTaskModal] = useState(false);
+
+  // 👉 Ordenación global
+  const [sortMode, setSortMode] = useState("priority"); // "priority" | "tag"
 
   const activeBoard = boards.find((b) => b.id === activeBoardId);
 
@@ -147,6 +150,7 @@ export default function App() {
       {/* Vista del board activo */}
       <BoardView
         board={activeBoard}
+        sortMode={sortMode}
         onOpenTask={(task) => {
           setSelectedTask(task);
           setOpenTaskModal(true);

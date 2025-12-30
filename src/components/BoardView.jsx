@@ -1,7 +1,7 @@
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, TextField, MenuItem } from "@mui/material";
 import BoardColumn from "./BoardColumn";
 
-export default function BoardView({ board, onOpenTask }) {
+export default function BoardView({ board, sortMode, onOpenTask, onChangeSortMode }) {
     if (!board) {
         return (
         <Box sx={{ p: 4 }}>
@@ -10,24 +10,48 @@ export default function BoardView({ board, onOpenTask }) {
         );
     }
 
-  // Filtrar tareas por estado
-    const backlog = board.tasks.filter(t => t.status === "backlog");
-    const inProgress = board.tasks.filter(t => t.status === "inProgress");
-    const inReview = board.tasks.filter(t => t.status === "inReview");
-    const completed = board.tasks.filter(t => t.status === "completed");
+    // Filtrar tareas por estado
+    const backlog = board.tasks.filter((t) => t.status === "backlog");
+    const inProgress = board.tasks.filter((t) => t.status === "inProgress");
+    const inReview = board.tasks.filter((t) => t.status === "inReview");
+    const completed = board.tasks.filter((t) => t.status === "completed");
 
     return (
         <Box sx={{ flexGrow: 1, p: 3 }}>
-        <Typography variant="h5" sx={{ mb: 3, fontWeight: 700 }}>
+        {/* Header con título + selector */}
+        <Box
+            sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3
+            }}
+        >
+            <Typography variant="h5" sx={{ fontWeight: 700 }}>
             {board.icon} {board.name}
-        </Typography>
+            </Typography>
 
+            <TextField
+            select
+            label="Sort by"
+            size="small"
+            value={sortMode}
+            onChange={(e) => onChangeSortMode(e.target.value)}
+            sx={{ width: 150 }}
+            >
+            <MenuItem value="priority">Priority</MenuItem>
+            <MenuItem value="tag">Tag</MenuItem>
+            </TextField>
+        </Box>
+
+        {/* Grid de columnas */}
         <Grid container spacing={3}>
             <Grid item xs={12} md={3}>
             <BoardColumn
                 title="Backlog"
                 tasks={backlog}
                 status="backlog"
+                sortMode={sortMode}
                 onOpenTask={onOpenTask}
             />
             </Grid>
@@ -37,6 +61,7 @@ export default function BoardView({ board, onOpenTask }) {
                 title="In Progress"
                 tasks={inProgress}
                 status="inProgress"
+                sortMode={sortMode}
                 onOpenTask={onOpenTask}
             />
             </Grid>
@@ -46,6 +71,7 @@ export default function BoardView({ board, onOpenTask }) {
                 title="In Review"
                 tasks={inReview}
                 status="inReview"
+                sortMode={sortMode}
                 onOpenTask={onOpenTask}
             />
             </Grid>
@@ -55,6 +81,7 @@ export default function BoardView({ board, onOpenTask }) {
                 title="Completed"
                 tasks={completed}
                 status="completed"
+                sortMode={sortMode}
                 onOpenTask={onOpenTask}
             />
             </Grid>
