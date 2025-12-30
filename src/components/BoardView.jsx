@@ -1,7 +1,20 @@
-import { Box, Typography, Grid, TextField, MenuItem } from "@mui/material";
+import {
+    Box,
+    Typography,
+    Grid,
+    TextField,
+    MenuItem
+} from "@mui/material";
 import BoardColumn from "./BoardColumn";
 
-export default function BoardView({ board, sortMode, onOpenTask, onChangeSortMode }) {
+export default function BoardView({
+    board,
+    sortMode,
+    onChangeSortMode,
+    searchQuery,
+    onChangeSearch,
+    onOpenTask
+    }) {
     if (!board) {
         return (
         <Box sx={{ p: 4 }}>
@@ -18,7 +31,7 @@ export default function BoardView({ board, sortMode, onOpenTask, onChangeSortMod
 
     return (
         <Box sx={{ flexGrow: 1, p: 3 }}>
-        {/* Header con título + selector */}
+        {/* Header con título + buscador + selector */}
         <Box
             sx={{
             display: "flex",
@@ -31,18 +44,30 @@ export default function BoardView({ board, sortMode, onOpenTask, onChangeSortMod
             {board.icon} {board.name}
             </Typography>
 
+            <Box sx={{ display: "flex", gap: 2 }}>
+            {/* Buscador */}
             <TextField
-            select
-            label="Sort by"
-            size="small"
-            value={sortMode}
-            onChange={(e) => onChangeSortMode(e.target.value)}
-            sx={{ width: 150 }}
+                label="Search"
+                size="small"
+                value={searchQuery}
+                onChange={(e) => onChangeSearch(e.target.value)}
+                sx={{ width: 200 }}
+            />
+
+            {/* Selector de ordenación */}
+            <TextField
+                select
+                label="Sort by"
+                size="small"
+                value={sortMode}
+                onChange={(e) => onChangeSortMode(e.target.value)}
+                sx={{ width: 150 }}
             >
-            <MenuItem value="priority">Priority</MenuItem>
-            <MenuItem value="tag">Tag</MenuItem>
-            <MenuItem value="title">Title</MenuItem>
+                <MenuItem value="priority">Priority</MenuItem>
+                <MenuItem value="tag">Tag</MenuItem>
+                <MenuItem value="title">Title</MenuItem>
             </TextField>
+            </Box>
         </Box>
 
         {/* Grid de columnas */}

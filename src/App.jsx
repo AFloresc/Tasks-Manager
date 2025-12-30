@@ -104,9 +104,26 @@ export default function App() {
   const [openTaskModal, setOpenTaskModal] = useState(false);
 
   // 👉 Ordenación global
-  const [sortMode, setSortMode] = useState("priority"); // "priority" | "tag"
+  const [sortMode, setSortMode] = useState("priority"); // "priority" | "tag" | "title"
+
+  // 👉 Buscador global
+  const [searchQuery, setSearchQuery] = useState("");
 
   const activeBoard = boards.find((b) => b.id === activeBoardId);
+
+  // 👉 Filtrar tareas según searchQuery
+  const filteredBoard = {
+    ...activeBoard,
+    tasks: activeBoard.tasks.filter((task) => {
+      const q = searchQuery.toLowerCase();
+
+      return (
+        task.title.toLowerCase().includes(q) ||
+        task.tags.some((t) => t.toLowerCase().includes(q)) ||
+        task.priority.toLowerCase().includes(q)
+      );
+    })
+  };
 
   // Crear nuevo board
   const handleCreateBoard = ({ name, icon }) => {
@@ -149,9 +166,11 @@ export default function App() {
 
       {/* Vista del board activo */}
       <BoardView
-        board={activeBoard}
+        board={filteredBoard}
         sortMode={sortMode}
-        onChangeSortMode={setSortMode} 
+        onChangeSortMode={setSortMode}
+        searchQuery={searchQuery}
+        onChangeSearch={setSearchQuery}
         onOpenTask={(task) => {
           setSelectedTask(task);
           setOpenTaskModal(true);
