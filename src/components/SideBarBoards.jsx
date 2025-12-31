@@ -1,56 +1,70 @@
-import { Box, List, ListItemButton, ListItemIcon, ListItemText, Typography, Divider, Button } from "@mui/material";
+import { Box, Typography, List, ListItemButton } from "@mui/material";
+import { useDroppable } from "@dnd-kit/core";
 
-export default function SidebarBoards({ boards, activeBoardId, onSelectBoard, onOpenNewBoard }) {
+export default function SidebarBoards({
+    boards,
+    activeBoardId,
+    onSelectBoard,
+    onOpenNewBoard
+}) {
     return (
         <Box
         sx={{
             width: 260,
-            height: "100vh",
-            borderRight: "1px solid rgba(0,0,0,0.1)",
+            backgroundColor: "grey.100",
+            borderRight: "1px solid #ddd",
             p: 2,
             display: "flex",
-            flexDirection: "column",
-            gap: 2
+            flexDirection: "column"
         }}
         >
-        <Typography variant="h6" sx={{ fontWeight: 700 }}>
+        <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
             Boards
         </Typography>
 
         <List sx={{ flexGrow: 1 }}>
-            {boards.map(board => (
-            <ListItemButton
+            {boards.map((board) => {
+            // Cada board es un droppable
+            const { setNodeRef } = useDroppable({
+                id: "board-" + board.id
+            });
+
+            return (
+                <ListItemButton
                 key={board.id}
+                ref={setNodeRef}
                 selected={board.id === activeBoardId}
                 onClick={() => onSelectBoard(board.id)}
                 sx={{
-                borderRadius: 1,
-                mb: 1,
-                "&.Mui-selected": {
+                    borderRadius: 1,
+                    mb: 1,
+                    "&.Mui-selected": {
                     backgroundColor: "primary.main",
                     color: "white",
-                    "&:hover": { backgroundColor: "primary.dark" }
-                }
+                    "&:hover": {
+                        backgroundColor: "primary.dark"
+                    }
+                    }
                 }}
-            >
-                <ListItemIcon sx={{ minWidth: 32 }}>
-                <Typography>{board.icon}</Typography>
-                </ListItemIcon>
-                <ListItemText primary={board.name} />
-            </ListItemButton>
-            ))}
+                >
+                <Typography sx={{ mr: 1 }}>{board.icon}</Typography>
+                <Typography>{board.name}</Typography>
+                </ListItemButton>
+            );
+            })}
         </List>
 
-        <Divider />
-
-        <Button
-            variant="outlined"
-            fullWidth
+        <ListItemButton
             onClick={onOpenNewBoard}
-            sx={{ mt: 2 }}
+            sx={{
+            borderRadius: 1,
+            mt: 2,
+            backgroundColor: "grey.200",
+            "&:hover": { backgroundColor: "grey.300" }
+            }}
         >
-            Add new board
-        </Button>
+            + Add new board
+        </ListItemButton>
         </Box>
     );
 }

@@ -3,44 +3,26 @@ import { useDroppable } from "@dnd-kit/core";
 import TaskCard from "./TaskCard";
 
 export default function BoardColumn({
+    boardId,
     title,
     tasks,
     status,
     sortMode,
     onOpenTask
 }) {
-    // --- Drag & Drop: columna droppable ---
-    const { setNodeRef } = useDroppable({
-        id: status // 👈 el ID de la columna
-    });
+    const { setNodeRef } = useDroppable({ id: status });
 
-    // --- Sorting logic ---
     const sortTasks = (tasks, mode) => {
         if (mode === "priority") {
-        const priorityOrder = {
-            critical: 1,
-            high: 2,
-            normal: 3,
-            low: 4
-        };
-
-        return [...tasks].sort(
-            (a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]
-        );
+        const order = { critical: 1, high: 2, normal: 3, low: 4 };
+        return [...tasks].sort((a, b) => order[a.priority] - order[b.priority]);
         }
-
         if (mode === "tag") {
-        return [...tasks].sort((a, b) => {
-            const tagA = a.tags[0] || "";
-            const tagB = b.tags[0] || "";
-            return tagA.localeCompare(tagB);
-        });
+        return [...tasks].sort((a, b) => (a.tags[0] || "").localeCompare(b.tags[0] || ""));
         }
-
         if (mode === "title") {
         return [...tasks].sort((a, b) => a.title.localeCompare(b.title));
         }
-
         return tasks;
     };
 
@@ -54,45 +36,25 @@ export default function BoardColumn({
             borderRadius: 2,
             p: 2,
             minHeight: "70vh",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-            display: "flex",
-            flexDirection: "column"
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
         }}
         >
-        {/* Header */}
-        <Typography
-            variant="h6"
-            sx={{
-            fontWeight: 700,
-            mb: 2,
-            display: "flex",
-            justifyContent: "space-between"
-            }}
-        >
-            {title}
-            <Typography component="span" sx={{ opacity: 0.6, fontSize: "0.9rem" }}>
-            {sortedTasks.length}
-            </Typography>
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
+            {title} ({sortedTasks.length})
         </Typography>
 
-        {/* Task list */}
-        <Stack spacing={2} sx={{ flexGrow: 1 }}>
+        <Stack spacing={2}>
             {sortedTasks.map((task) => (
             <TaskCard
                 key={task.id}
                 task={task}
+                boardId={boardId}   // ✔ NECESARIO PARA DnD ENTRE BOARDS
                 onClick={() => onOpenTask(task)}
             />
             ))}
         </Stack>
 
-        {/* Add new task */}
-        <Button
-            variant="outlined"
-            sx={{ mt: 2 }}
-            fullWidth
-            onClick={() => console.log("TODO: open new task modal")}
-        >
+        <Button variant="outlined" sx={{ mt: 2 }} fullWidth>
             Add new task
         </Button>
         </Box>
