@@ -154,6 +154,22 @@ export default function App() {
     );
   };
 
+  // 👉 Drag & Drop: mover tarea entre columnas
+  const handleMoveTask = (taskId, newStatus) => {
+    setBoards((prevBoards) =>
+      prevBoards.map((board) =>
+        board.id === activeBoardId
+          ? {
+              ...board,
+              tasks: board.tasks.map((t) =>
+                t.id === taskId ? { ...t, status: newStatus } : t
+              )
+            }
+          : board
+      )
+    );
+  };
+
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
       {/* Sidebar */}
@@ -171,6 +187,7 @@ export default function App() {
         onChangeSortMode={setSortMode}
         searchQuery={searchQuery}
         onChangeSearch={setSearchQuery}
+        onMoveTask={handleMoveTask}   // 👈 DRAG & DROP
         onOpenTask={(task) => {
           setSelectedTask(task);
           setOpenTaskModal(true);

@@ -1,7 +1,19 @@
 import { Box, Typography, Button, Stack } from "@mui/material";
+import { useDroppable } from "@dnd-kit/core";
 import TaskCard from "./TaskCard";
 
-export default function BoardColumn({ title, tasks, status, sortMode, onOpenTask }) {
+export default function BoardColumn({
+    title,
+    tasks,
+    status,
+    sortMode,
+    onOpenTask
+}) {
+    // --- Drag & Drop: columna droppable ---
+    const { setNodeRef } = useDroppable({
+        id: status // 👈 el ID de la columna
+    });
+
     // --- Sorting logic ---
     const sortTasks = (tasks, mode) => {
         if (mode === "priority") {
@@ -36,6 +48,7 @@ export default function BoardColumn({ title, tasks, status, sortMode, onOpenTask
 
     return (
         <Box
+        ref={setNodeRef}
         sx={{
             backgroundColor: "background.paper",
             borderRadius: 2,

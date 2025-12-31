@@ -1,71 +1,72 @@
-import { Card, CardContent, Typography, Chip, Stack } from "@mui/material";
+import { Box, Chip, Stack, Typography } from "@mui/material";
+import { useDraggable } from "@dnd-kit/core";
 
 export default function TaskCard({ task, onClick }) {
-    const getPriorityColor = (priority) => {
-        switch (priority) {
-        case "critical":
-            return "#d32f2f"; // rojo fuerte
-        case "high":
-            return "#f57c00"; // naranja
-        case "normal":
-            return "#0288d1"; // azul
-        case "low":
-            return "#757575"; // gris
-        default:
-            return "#9e9e9e";
-        }
+    const { attributes, listeners, setNodeRef, transform, isDragging } =
+        useDraggable({
+        id: task.id
+        });
+
+    const style = {
+        transform: transform
+        ? `translate(${transform.x}px, ${transform.y}px)`
+        : undefined,
+        opacity: isDragging ? 0.5 : 1,
+        cursor: "grab"
     };
 
+    // Color por prioridad
+    const priorityColor = {
+        critical: "error",
+        high: "warning",
+        normal: "info",
+        low: "default"
+    }[task.priority];
+
     return (
-        <Card
+        <Box
+        ref={setNodeRef}
+        {...listeners}
+        {...attributes}
         onClick={onClick}
+        style={style}
         sx={{
-            cursor: "pointer",
+            p: 2,
             borderRadius: 2,
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            transition: "0.2s",
+            backgroundColor: "background.paper",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
+            transition: "0.15s ease",
             "&:hover": {
-            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
-            transform: "translateY(-2px)"
+            boxShadow: "0 2px 6px rgba(0,0,0,0.25)"
             }
         }}
         >
-        <CardContent sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            {/* Title */}
-            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+        {/* Título */}
+        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
             {task.title}
-            </Typography>
+        </Typography>
 
-            {/* Priority */}
+        {/* Badges */}
+        <Stack direction="row" spacing={1} flexWrap="wrap">
+            {/* Prioridad */}
             <Chip
             label={task.priority}
             size="small"
-            sx={{
-                textTransform: "capitalize",
-                backgroundColor: getPriorityColor(task.priority),
-                color: "white",
-                fontWeight: 600,
-                fontSize: "0.7rem",
-                alignSelf: "flex-start"
-            }}
+            color={priorityColor}
+            sx={{ textTransform: "capitalize" }}
             />
 
             {/* Tags */}
-            <Stack direction="row" spacing={1} flexWrap="wrap">
             {task.tags.map((tag) => (
-                <Chip
+            <Chip
                 key={tag}
                 label={tag}
                 size="small"
-                sx={{
-                    fontSize: "0.7rem",
-                    backgroundColor: "rgba(0,0,0,0.05)",
-                    fontWeight: 500
-                }}
-                />
+                variant="outlined"
+                sx={{ textTransform: "capitalize" }}
+            />
             ))}
-            </Stack>
-        </CardContent>
-        </Card>
+        </Stack>
+        </Box>
     );
 }
