@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
-import SidebarBoards from "../components/SideBarBoards";
-import BoardView from "../components/BoardView";
+import SidebarBoards from "../SideBarBoards";
+import BoardView from "../BoardView";
 
 export default function MainLayout({
     boards,

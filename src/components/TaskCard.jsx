@@ -1,8 +1,27 @@
 import { Box, Typography, Chip } from "@mui/material";
+import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
+import { useDraggable } from "@dnd-kit/core";
 
-export default function TaskCard({ task, onClick }) {
+export default function TaskCard({ task, boardId, onClick }) {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: task.id,
+    data: {
+      type: "task", // 👈 añado el type por claridad en DnD
+      task,
+      boardId
+    }
+  });
+
+  const style = {
+    transform: transform
+      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
+      : undefined
+  };
+
   return (
     <Box
+      ref={setNodeRef}
+      style={style}
       onClick={onClick}
       sx={(theme) => ({
         width: "100%",
@@ -13,15 +32,12 @@ export default function TaskCard({ task, onClick }) {
         backgroundColor: theme.palette.background.paper,
         border: `1px solid ${theme.palette.divider}`,
         borderRadius: 2,
-
-        // 👇 Compacto en móvil
         p: { xs: 1.2, sm: 2 },
         gap: { xs: 0.5, sm: 1 },
-
-        cursor: "pointer",
-        transition: "all 0.2s ease",
         display: "flex",
         flexDirection: "column",
+        transition: "all 0.2s ease",
+        cursor: "pointer",
 
         "&:hover": {
           transform: "translateY(-3px)",
@@ -36,6 +52,20 @@ export default function TaskCard({ task, onClick }) {
         }
       })}
     >
+      {/* DRAG HANDLE */}
+      <Box
+        {...listeners}
+        {...attributes}
+        sx={{
+          cursor: "grab",
+          display: "flex",
+          justifyContent: "flex-end",
+          mb: 1
+        }}
+      >
+        <DragIndicatorIcon fontSize="small" />
+      </Box>
+
       {/* TITLE */}
       <Typography
         variant="subtitle2"
@@ -49,7 +79,7 @@ export default function TaskCard({ task, onClick }) {
         {task.title}
       </Typography>
 
-      {/* DATES — compactas */}
+      {/* DATES */}
       <Typography
         variant="caption"
         color="text.secondary"
@@ -62,7 +92,7 @@ export default function TaskCard({ task, onClick }) {
         {new Date(task.updatedAt).toLocaleDateString()}
       </Typography>
 
-      {/* TAGS — compactos */}
+      {/* TAGS */}
       <Box
         sx={{
           mt: { xs: 0.5, sm: 1 },

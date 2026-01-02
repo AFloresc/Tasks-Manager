@@ -11,6 +11,7 @@ import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 
 import BoardColumn from "./BoardColumn";
+import { useDroppable } from "@dnd-kit/core";
 
 export default function BoardView({
     board,
@@ -22,7 +23,16 @@ export default function BoardView({
     onAddTask,
     mode,
     onToggleDarkMode
-}) {
+    }) {
+    // 🔥 DROPPABLE DEL BOARD
+    const { setNodeRef } = useDroppable({
+        id: "board-" + board.id,
+        data: {
+        type: "board",
+        boardId: board.id
+        }
+    });
+
     const sortedTasks = [...board.tasks].sort((a, b) => {
         if (sortMode === "priority") {
         const order = { critical: 1, high: 2, normal: 3, low: 4 };
@@ -47,6 +57,7 @@ export default function BoardView({
 
     return (
         <Box
+        ref={setNodeRef}   // 👈 CLAVE PARA MOVER ENTRE BOARDS
         sx={{
             flexGrow: 1,
             p: { xs: 2, sm: 3 },
@@ -106,7 +117,7 @@ export default function BoardView({
             </Stack>
         </Box>
 
-        {/* COLUMNS — GRID RESPONSIVE SIN ALTURA FIJA */}
+        {/* COLUMNS */}
         <Box
             sx={{
             display: "grid",
