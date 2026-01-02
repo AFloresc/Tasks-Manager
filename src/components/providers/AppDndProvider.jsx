@@ -21,7 +21,16 @@ export default function AppDndProvider({
   function handleDragEnd(event) {
     const { active, over } = event;
 
-    setActiveTask(null);
+
+        console.log("---- DRAG END ----");
+        console.log("active:", active);
+        console.log("over:", over);
+        console.log("over?.id:", over?.id);
+        console.log("over?.data?.current:", over?.data?.current);
+        console.log("------------------");
+
+
+        setActiveTask(null);
     setActiveBoardId(null);
 
     if (!over) return;
@@ -31,33 +40,46 @@ export default function AppDndProvider({
     const fromStatus = active.data.current.task.status;
 
     const overType = over.data?.current?.type;
-    const toBoardId = over.data?.current?.boardId;
 
-    // 1) MOVER ENTRE COLUMNAS DEL MISMO BOARD
-    if (overType === "column" && toBoardId === fromBoardId) {
-      const newStatus = over.id;
-      onMoveTask(fromBoardId, taskId, newStatus);
+    // -----------------------------------------
+    // 1) DROP SOBRE UNA COLUMNA
+    // -----------------------------------------
+    if (overType === "column") {
+      const toBoardId = over.data.current.boardId;
+
+      // Extraemos el status real desde "boardId-status"
+      const newStatus = over.id.split("-")[1];
+
+      // MISMO BOARD → mover dentro del board
+      if (toBoardId === fromBoardId) {
+        onMoveTask(fromBoardId, taskId, newStatus);
+        return;
+      }
+
+      // OTRO BOARD → mover entre boards
+      onMoveTaskToBoard(fromBoardId, toBoardId, taskId, newStatus);
       return;
     }
 
-    // 2) MOVER A OTRO BOARD
+    // -----------------------------------------
+    // 2) DROP SOBRE EL BOARD (top bar)
+    // -----------------------------------------
     if (overType === "board") {
-      const newStatus = fromStatus;
-      onMoveTaskToBoard(fromBoardId, toBoardId, taskId, newStatus);
-      return;
-    }
+      // Extraemos el boardId real desde "board-<id>"
+      const toBoardId = over.id.replace("board-", "");
 
-    // 3) MOVER A UNA COLUMNA DE OTRO BOARD
-    if (overType === "column" && toBoardId !== fromBoardId) {
-      const newStatus = over.id;
-      onMoveTaskToBoard(fromBoardId, toBoardId, taskId, newStatus);
+      // Si es otro board → mover manteniendo el status
+      if (toBoardId !== fromBoardId) {
+        onMoveTaskToBoard(fromBoardId, toBoardId, taskId, fromStatus);
+      }
+
       return;
     }
   }
 
   return (
     <DndContext
-      collisionDetection={closestCenter}   // 👈 SOLUCIÓN
+      collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >

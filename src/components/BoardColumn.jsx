@@ -10,7 +10,7 @@ export default function BoardColumn({
     onOpenTask
 }) {
     const { setNodeRef } = useDroppable({ 
-        id: status,
+        id: `${boardId}-${status}`,
         data: {
             type: "column",
             boardId
