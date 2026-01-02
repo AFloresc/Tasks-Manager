@@ -8,7 +8,8 @@ export default function BoardColumn({
     tasks,
     status,
     sortMode,
-    onOpenTask
+    onOpenTask,
+    onAddTask
 }) {
     const { setNodeRef } = useDroppable({ id: status });
 
@@ -48,13 +49,18 @@ export default function BoardColumn({
             <TaskCard
                 key={task.id}
                 task={task}
-                boardId={boardId}   // ✔ NECESARIO PARA DnD ENTRE BOARDS
+                boardId={boardId}
                 onClick={() => onOpenTask(task)}
             />
             ))}
         </Stack>
 
-        <Button variant="outlined" sx={{ mt: 2 }} fullWidth>
+        <Button
+            variant="outlined"
+            sx={{ mt: 2 }}
+            fullWidth
+            onClick={() => onAddTask(status)}
+        >
             Add new task
         </Button>
         </Box>

@@ -7,7 +7,6 @@ import NewBoardModal from "./components/NewBoardModal";
 import BoardView from "./components/BoardView";
 import TaskModal from "./components/TaskModal";
 
-// Mock inicial
 const initialBoards = [
   {
     id: "b1",
@@ -44,12 +43,16 @@ export default function App() {
   const [selectedTask, setSelectedTask] = useState(null);
   const [openTaskModal, setOpenTaskModal] = useState(false);
 
+  // NEW TASK MODAL
+  const [openNewTaskModal, setOpenNewTaskModal] = useState(false);
+  const [newTaskBoardId, setNewTaskBoardId] = useState(null);
+  const [newTaskStatus, setNewTaskStatus] = useState(null);
+
   const [sortMode, setSortMode] = useState("priority");
   const [searchQuery, setSearchQuery] = useState("");
 
   const activeBoard = boards.find((b) => b.id === activeBoardId);
 
-  // Evitar errores si activeBoard es null
   const filteredBoard = activeBoard
     ? {
         ...activeBoard,
@@ -64,7 +67,7 @@ export default function App() {
       }
     : null;
 
-  // Mover tarea dentro del mismo board (entre columnas)
+  // MOVE TASK BETWEEN COLUMNS
   const handleMoveTask = (taskId, newStatus, boardId) => {
     setBoards((prev) =>
       prev.map((board) =>
@@ -80,11 +83,10 @@ export default function App() {
     );
   };
 
-  // Mover tarea entre boards
+  // MOVE TASK BETWEEN BOARDS
   const handleMoveTaskToBoard = (taskId, fromBoardId, toBoardId) => {
     let movedTask = null;
 
-    // 1. Sacar la tarea del board origen
     const boardsWithoutTask = boards.map((board) => {
       if (board.id !== fromBoardId) return board;
 
@@ -101,7 +103,6 @@ export default function App() {
 
     if (!movedTask) return;
 
-    // 2. Añadirla al board destino
     const updatedBoards = boardsWithoutTask.map((board) =>
       board.id === toBoardId
         ? { ...board, tasks: [...board.tasks, { ...movedTask, status: "backlog" }] }
@@ -110,6 +111,31 @@ export default function App() {
 
     setBoards(updatedBoards);
     setActiveBoardId(toBoardId);
+  };
+
+  // CREATE NEW TASK
+  const handleCreateTask = (task) => {
+    setBoards((prev) =>
+      prev.map((board) =>
+        board.id === newTaskBoardId
+          ? {
+              ...board,
+              tasks: [
+                ...board.tasks,
+                {
+                  id: crypto.randomUUID(),
+                  title: task.title,
+                  tags: task.tags || [],
+                  priority: task.priority || "normal",
+                  status: newTaskStatus
+                }
+              ]
+            }
+          : board
+      )
+    );
+
+    setOpenNewTaskModal(false);
   };
 
   return (
@@ -121,7 +147,6 @@ export default function App() {
         const taskId = active.id;
         const fromBoardId = active.data.current.boardId;
 
-        // Drop sobre otro board
         if (over.id.startsWith("board-")) {
           const toBoardId = over.id.replace("board-", "");
           if (fromBoardId !== toBoardId) {
@@ -130,7 +155,6 @@ export default function App() {
           return;
         }
 
-        // Drop sobre columna del mismo board
         handleMoveTask(taskId, over.id, fromBoardId);
       }}
     >
@@ -153,6 +177,11 @@ export default function App() {
               setSelectedTask(task);
               setOpenTaskModal(true);
             }}
+            onAddTask={(status) => {
+              setNewTaskBoardId(activeBoardId);
+              setNewTaskStatus(status);
+              setOpenNewTaskModal(true);
+            }}
           />
         )}
 
@@ -166,25 +195,38 @@ export default function App() {
           }}
         />
 
-        <TaskModal
-          open={openTaskModal}
-          task={selectedTask}
-          onClose={() => setOpenTaskModal(false)}
-          onSave={(updatedTask) => {
-            setBoards((prev) =>
-              prev.map((board) =>
-                board.id === activeBoardId
-                  ? {
-                      ...board,
-                      tasks: board.tasks.map((t) =>
-                        t.id === updatedTask.id ? updatedTask : t
-                      )
-                    }
-                  : board
-              )
-            );
-          }}
-        />
+        {/* EDIT TASK */}
+        {openTaskModal && (
+          <TaskModal
+            open={openTaskModal}
+            task={selectedTask}
+            onClose={() => setOpenTaskModal(false)}
+            onSave={(updatedTask) => {
+              setBoards((prev) =>
+                prev.map((board) =>
+                  board.id === activeBoardId
+                    ? {
+                        ...board,
+                        tasks: board.tasks.map((t) =>
+                          t.id === updatedTask.id ? updatedTask : t
+                        )
+                      }
+                    : board
+                )
+              );
+            }}
+          />
+        )}
+
+        {/* CREATE TASK */}
+        {openNewTaskModal && (
+          <TaskModal
+            open={openNewTaskModal}
+            task={null}
+            onClose={() => setOpenNewTaskModal(false)}
+            onSave={handleCreateTask}
+          />
+        )}
       </Box>
     </DndContext>
   );

@@ -29,115 +29,122 @@ const PRIORITY_OPTIONS = [
 const TAG_OPTIONS = ["Technical", "Front-end", "Design", "Concept"];
 
 export default function TaskModal({ open, task, onClose, onSave }) {
-    const [title, setTitle] = useState("");
-    const [status, setStatus] = useState("backlog");
-    const [tags, setTags] = useState([]);
-    const [priority, setPriority] = useState("normal");
+  const isEditing = Boolean(task);
 
-    // Load task data when modal opens
-    useEffect(() => {
-        if (task) {
-        setTitle(task.title);
-        setStatus(task.status);
-        setTags(task.tags);
-        setPriority(task.priority || "normal"); // ← IMPORTANT
-        }
-    }, [task]);
+  const [title, setTitle] = useState("");
+  const [status, setStatus] = useState("backlog");
+  const [tags, setTags] = useState([]);
+  const [priority, setPriority] = useState("normal");
 
-    const handleToggleTag = (tag) => {
-        if (tags.includes(tag)) {
-        setTags(tags.filter((t) => t !== tag));
-        } else {
-        setTags([...tags, tag]);
-        }
+  // Load task data OR reset for new task
+  useEffect(() => {
+    if (task) {
+      setTitle(task.title);
+      setStatus(task.status);
+      setTags(task.tags);
+      setPriority(task.priority || "normal");
+    } else {
+      // NEW TASK DEFAULTS
+      setTitle("");
+      setStatus("backlog");
+      setTags([]);
+      setPriority("normal");
+    }
+  }, [task, open]);
+
+  const handleToggleTag = (tag) => {
+    if (tags.includes(tag)) {
+      setTags(tags.filter((t) => t !== tag));
+    } else {
+      setTags([...tags, tag]);
+    }
+  };
+
+  const handleSave = () => {
+    const result = {
+      ...(task || {}), // keep id if editing
+      title,
+      status,
+      tags,
+      priority
     };
 
-    const handleSave = () => {
-        if (!task) return;
+    onSave(result);
+    onClose();
+  };
 
-        onSave({
-        ...task,
-        title,
-        status,
-        tags,
-        priority // ← IMPORTANT
-        });
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>
+        {isEditing ? "Edit Task" : "Create Task"}
+      </DialogTitle>
 
-        onClose();
-    };
+      <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+        {/* Task name */}
+        <TextField
+          label="Task name"
+          fullWidth
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
 
-    if (!task) return null;
+        {/* Status */}
+        <TextField
+          select
+          label="Status"
+          fullWidth
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+        >
+          {STATUS_OPTIONS.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </MenuItem>
+          ))}
+        </TextField>
 
-    return (
-        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-        <DialogTitle>Task details</DialogTitle>
+        {/* Priority */}
+        <TextField
+          select
+          label="Priority"
+          fullWidth
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
+        >
+          {PRIORITY_OPTIONS.map((opt) => (
+            <MenuItem key={opt.value} value={opt.value}>
+              {opt.label}
+            </MenuItem>
+          ))}
+        </TextField>
 
-        <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-            {/* Task name */}
-            <TextField
-            label="Task name"
-            fullWidth
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            />
+        {/* Tags */}
+        <div>
+          <Typography variant="subtitle1" sx={{ mb: 1 }}>
+            Tags
+          </Typography>
 
-            {/* Status */}
-            <TextField
-            select
-            label="Status"
-            fullWidth
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            >
-            {STATUS_OPTIONS.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                {opt.label}
-                </MenuItem>
+          <Stack direction="row" spacing={1} flexWrap="wrap">
+            {TAG_OPTIONS.map((tag) => (
+              <Chip
+                key={tag}
+                label={tag}
+                clickable
+                onClick={() => handleToggleTag(tag)}
+                color={tags.includes(tag) ? "primary" : "default"}
+                variant={tags.includes(tag) ? "filled" : "outlined"}
+              />
             ))}
-            </TextField>
+          </Stack>
+        </div>
+      </DialogContent>
 
-            {/* Priority */}
-            <TextField
-            select
-            label="Priority"
-            fullWidth
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-            >
-            {PRIORITY_OPTIONS.map((opt) => (
-                <MenuItem key={opt.value} value={opt.value}>
-                {opt.label}
-                </MenuItem>
-            ))}
-            </TextField>
-
-            {/* Tags */}
-            <div>
-            <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                Tags
-            </Typography>
-
-            <Stack direction="row" spacing={1} flexWrap="wrap">
-                {TAG_OPTIONS.map((tag) => (
-                <Chip
-                    key={tag}
-                    label={tag}
-                    clickable
-                    onClick={() => handleToggleTag(tag)}
-                    color={tags.includes(tag) ? "primary" : "default"}
-                    variant={tags.includes(tag) ? "filled" : "outlined"}
-                />
-                ))}
-            </Stack>
-            </div>
-        </DialogContent>
-
-        <DialogActions>
-            <Button onClick={onClose}>Cancel</Button>
-            <Button variant="contained" onClick={handleSave}>
-            Save
-            </Button>
-        </DialogActions>
-        </Dialog>
-    );
+      <DialogActions>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="contained" onClick={handleSave}>
+          {isEditing ? "Save" : "Create"}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
 }
