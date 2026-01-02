@@ -2,38 +2,48 @@ import { Box, Typography, Stack } from "@mui/material";
 import TaskCard from "./TaskCard";
 import { useDroppable } from "@dnd-kit/core";
 
-export default function BoardColumn({ title, status, tasks, boardId, onOpenTask }) {
-    const { setNodeRef } = useDroppable({
-        id: status
-    });
+export default function BoardColumn({
+  title,
+  status,
+  tasks = [],
+  boardId,
+  onOpenTask
+}) {
+  const { setNodeRef } = useDroppable({ id: status });
 
-    return (
-        <Box
-        ref={setNodeRef}
-        sx={{
-            backgroundColor: "background.paper",
-            borderRadius: 2,
-            p: 2,
-            minHeight: "80vh",
-            border: (theme) => `1px solid ${theme.palette.divider}`
-        }}
-        >
-        {/* COLUMN TITLE */}
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
-            {title}
-        </Typography>
+  return (
+    <Box
+      ref={setNodeRef}
+      sx={(theme) => ({
+        width: "100%",
+        minWidth: 0,               // 👈 evita overflow del grid
+        maxWidth: "100%",
+        boxSizing: "border-box",
+        overflow: "hidden",        // 👈 evita que las cards sobresalgan
+        backgroundColor: theme.palette.background.paper,
+        borderRadius: 2,
+        p: 2,
+        border: `1px solid ${theme.palette.divider}`,
+        minHeight: "300px",
+        display: "flex",
+        flexDirection: "column",
+        gap: 2
+      })}
+    >
+      <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+        {title}
+      </Typography>
 
-        {/* TASKS */}
-        <Stack spacing={2}>
-            {tasks.map((task) => (
-            <TaskCard
-                key={task.id}
-                task={task}
-                boardId={boardId}
-                onClick={() => onOpenTask(task)}
-            />
-            ))}
-        </Stack>
-        </Box>
-    );
+      <Stack spacing={2} sx={{ flexGrow: 1, minWidth: 0 }}>
+        {tasks.map((task) => (
+          <TaskCard
+            key={task.id}
+            task={task}
+            boardId={boardId}
+            onClick={() => onOpenTask(task)}
+          />
+        ))}
+      </Stack>
+    </Box>
+  );
 }

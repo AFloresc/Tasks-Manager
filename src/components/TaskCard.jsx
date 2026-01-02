@@ -1,83 +1,110 @@
-import { Box, Chip, Stack, Typography, IconButton } from "@mui/material";
-import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
-import { useDraggable } from "@dnd-kit/core";
+import { Box, Typography, Chip } from "@mui/material";
 
-export default function TaskCard({ task, boardId, onClick }) {
-    const { attributes, listeners, setNodeRef, transform, isDragging } =
-        useDraggable({
-        id: task.id,
-        data: {
-            boardId,
-            status: task.status
+export default function TaskCard({ task, onClick }) {
+  return (
+    <Box
+      onClick={onClick}
+      sx={(theme) => ({
+        width: "100%",
+        minWidth: 0,
+        maxWidth: "100%",
+        boxSizing: "border-box",
+        overflow: "hidden",
+        backgroundColor: theme.palette.background.paper,
+        border: `1px solid ${theme.palette.divider}`,
+        borderRadius: 2,
+
+        // 👇 Compacto en móvil
+        p: { xs: 1.2, sm: 2 },
+        gap: { xs: 0.5, sm: 1 },
+
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+        display: "flex",
+        flexDirection: "column",
+
+        "&:hover": {
+          transform: "translateY(-3px)",
+          boxShadow:
+            theme.palette.mode === "light"
+              ? "0 6px 16px rgba(0,0,0,0.12)"
+              : "0 6px 16px rgba(0,0,0,0.5)",
+          backgroundColor:
+            theme.palette.mode === "light"
+              ? theme.palette.grey[100]
+              : theme.palette.grey[900]
         }
-        });
-
-    const style = {
-        transform: transform
-        ? `translate(${transform.x}px, ${transform.y}px)`
-        : undefined,
-        opacity: isDragging ? 0.5 : 1
-    };
-
-    const priorityColor = {
-        critical: "error",
-        high: "warning",
-        normal: "info",
-        low: "default"
-    }[task.priority];
-
-    const formatDate = (iso) =>
-        iso ? new Date(iso).toLocaleDateString("es-ES") : "—";
-
-    return (
-        <Box
-        ref={setNodeRef}
-        style={style}
+      })}
+    >
+      {/* TITLE */}
+      <Typography
+        variant="subtitle2"
         sx={{
-            p: 2,
-            borderRadius: 2,
-            backgroundColor: "background.paper",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.15)",
-            "&:hover": { boxShadow: "0 2px 6px rgba(0,0,0,0.25)" },
-            cursor: "pointer",
-            position: "relative"
+          fontWeight: 600,
+          lineHeight: 1.25,
+          wordBreak: "break-word",
+          fontSize: { xs: "0.9rem", sm: "1rem" }
         }}
-        onClick={onClick}
-        >
-        {/* DRAG HANDLE */}
-        <Box sx={{ position: "absolute", top: 4, right: 4 }}>
-            <IconButton
+      >
+        {task.title}
+      </Typography>
+
+      {/* DATES — compactas */}
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        sx={{
+          wordBreak: "break-word",
+          fontSize: { xs: "0.7rem", sm: "0.75rem" }
+        }}
+      >
+        {new Date(task.createdAt).toLocaleDateString()} —{" "}
+        {new Date(task.updatedAt).toLocaleDateString()}
+      </Typography>
+
+      {/* TAGS — compactos */}
+      <Box
+        sx={{
+          mt: { xs: 0.5, sm: 1 },
+          display: "flex",
+          flexWrap: "wrap",
+          gap: { xs: 0.5, sm: 1 },
+          minWidth: 0
+        }}
+      >
+        <Chip
+          label={task.priority}
+          size="small"
+          sx={{
+            height: { xs: 20, sm: 24 },
+            fontSize: { xs: "0.65rem", sm: "0.75rem" }
+          }}
+          color={
+            task.priority === "critical"
+              ? "error"
+              : task.priority === "high"
+              ? "warning"
+              : task.priority === "normal"
+              ? "info"
+              : "default"
+          }
+        />
+
+        {task.tags.map((tag, i) => (
+          <Chip
+            key={i}
+            label={tag}
             size="small"
-            {...listeners}
-            {...attributes}
-            onClick={(e) => e.stopPropagation()}
-            >
-            <DragIndicatorIcon fontSize="small" />
-            </IconButton>
-        </Box>
-
-        {/* TITLE */}
-        <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-            {task.title}
-        </Typography>
-
-        {/* CREATED / UPDATED */}
-        {(task.createdAt || task.updatedAt) && (
-            <Typography
-            variant="caption"
-            sx={{ opacity: 0.6, display: "block", mb: 1 }}
-            >
-            🕒 {formatDate(task.createdAt)} — ✏️ {formatDate(task.updatedAt)}
-            </Typography>
-        )}
-
-        {/* TAGS + PRIORITY */}
-        <Stack direction="row" spacing={1} flexWrap="wrap">
-            <Chip label={task.priority} size="small" color={priorityColor} />
-            {task.tags.map((tag) => (
-            <Chip key={tag} label={tag} size="small" variant="outlined" />
-            ))}
-        </Stack>
-        </Box>
-    );
+            variant="outlined"
+            sx={{
+              height: { xs: 20, sm: 24 },
+              fontSize: { xs: "0.65rem", sm: "0.75rem" },
+              maxWidth: "100%",
+              overflow: "hidden"
+            }}
+          />
+        ))}
+      </Box>
+    </Box>
+  );
 }

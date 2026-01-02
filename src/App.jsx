@@ -270,7 +270,16 @@ export default function App() {
           handleMoveTask(taskId, over.id, fromBoardId);
         }}
       >
-        <Box sx={{ display: "flex", height: "100vh" }}>
+        {/* 👇 FIX DARK MODE BACKGROUND */}
+        <Box
+          sx={(theme) => ({
+            display: "flex",
+            height: "100vh",
+            width: "100%",
+            backgroundColor: theme.palette.background.default,
+            overflowX: "hidden"
+          })}
+        >
           <SidebarBoards
             boards={boards}
             activeBoardId={activeBoardId}

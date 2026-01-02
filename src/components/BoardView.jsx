@@ -3,7 +3,6 @@ import {
     TextField,
     MenuItem,
     Button,
-    Typography,
     Stack,
     IconButton
 } from "@mui/material";
@@ -24,25 +23,17 @@ export default function BoardView({
     mode,
     onToggleDarkMode
 }) {
-    // Ordenar tareas según sortMode
     const sortedTasks = [...board.tasks].sort((a, b) => {
         if (sortMode === "priority") {
         const order = { critical: 1, high: 2, normal: 3, low: 4 };
         return order[a.priority] - order[b.priority];
         }
-        if (sortMode === "title") {
-        return a.title.localeCompare(b.title);
-        }
-        if (sortMode === "createdAt") {
-        return new Date(a.createdAt) - new Date(b.createdAt);
-        }
-        if (sortMode === "updatedAt") {
-        return new Date(b.updatedAt) - new Date(a.updatedAt);
-        }
+        if (sortMode === "title") return a.title.localeCompare(b.title);
+        if (sortMode === "createdAt") return new Date(a.createdAt) - new Date(b.createdAt);
+        if (sortMode === "updatedAt") return new Date(b.updatedAt) - new Date(a.updatedAt);
         return 0;
     });
 
-    // Agrupar tareas por columna
     const columns = {
         backlog: [],
         inProgress: [],
@@ -55,33 +46,49 @@ export default function BoardView({
     });
 
     return (
-        <Box sx={{ flexGrow: 1, p: 3, overflow: "auto" }}>
-        {/* TOP BAR: Search + Sort + Add Task + Dark Mode */}
+        <Box
+        sx={{
+            flexGrow: 1,
+            p: { xs: 2, sm: 3 },
+            overflow: "visible",
+            minWidth: 0,
+            display: "flex",
+            flexDirection: "column"
+        }}
+        >
+        {/* TOP BAR */}
         <Box
             sx={{
             display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
-            alignItems: "center",
+            alignItems: { xs: "stretch", sm: "center" },
             mb: 3,
             gap: 2
             }}
         >
-            {/* LEFT: Search */}
             <TextField
             label="Search"
             value={searchQuery}
             onChange={(e) => onChangeSearch(e.target.value)}
-            sx={{ width: 260 }}
+            sx={{ width: { xs: "100%", sm: 260 } }}
             />
 
-            {/* RIGHT: Sort + Add Task + Dark Mode */}
-            <Stack direction="row" spacing={2} alignItems="center">
+            <Stack
+            direction="row"
+            spacing={2}
+            alignItems="center"
+            sx={{
+                width: { xs: "100%", sm: "auto" },
+                justifyContent: { xs: "space-between", sm: "flex-end" }
+            }}
+            >
             <TextField
                 select
                 label="Sort by"
                 value={sortMode}
                 onChange={(e) => onChangeSortMode(e.target.value)}
-                sx={{ width: 160 }}
+                sx={{ width: { xs: "50%", sm: 160 } }}
             >
                 <MenuItem value="priority">Priority</MenuItem>
                 <MenuItem value="title">Title</MenuItem>
@@ -89,10 +96,7 @@ export default function BoardView({
                 <MenuItem value="updatedAt">Updated</MenuItem>
             </TextField>
 
-            <Button
-                variant="contained"
-                onClick={() => onAddTask("backlog")}
-            >
+            <Button variant="contained" onClick={() => onAddTask("backlog")}>
                 + Add Task
             </Button>
 
@@ -102,12 +106,19 @@ export default function BoardView({
             </Stack>
         </Box>
 
-        {/* COLUMNS */}
+        {/* COLUMNS — GRID RESPONSIVE SIN ALTURA FIJA */}
         <Box
             sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gap: 3
+            gridTemplateColumns: {
+                xs: "1fr",
+                sm: "1fr 1fr",
+                md: "1fr 1fr 1fr 1fr"
+            },
+            columnGap: 3,
+            rowGap: { xs: 3, sm: 3, md: 0 },
+            boxSizing: "border-box",
+            alignItems: "start"
             }}
         >
             <BoardColumn
@@ -117,7 +128,6 @@ export default function BoardView({
             boardId={board.id}
             onOpenTask={onOpenTask}
             />
-
             <BoardColumn
             title="In Progress"
             status="inProgress"
@@ -125,7 +135,6 @@ export default function BoardView({
             boardId={board.id}
             onOpenTask={onOpenTask}
             />
-
             <BoardColumn
             title="In Review"
             status="inReview"
@@ -133,7 +142,6 @@ export default function BoardView({
             boardId={board.id}
             onOpenTask={onOpenTask}
             />
-
             <BoardColumn
             title="Completed"
             status="completed"
