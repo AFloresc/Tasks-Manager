@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, ThemeProvider, CssBaseline } from "@mui/material";
 import { DndContext } from "@dnd-kit/core";
 
 import SidebarBoards from "./components/SideBarBoards";
 import NewBoardModal from "./components/NewBoardModal";
 import BoardView from "./components/BoardView";
 import TaskModal from "./components/TaskModal";
+import { getTheme } from "./theme"; // 👈 IMPORTANTE
 
 const initialBoards = [
   {
@@ -141,6 +142,11 @@ export default function App() {
   const [sortMode, setSortMode] = useState("priority");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // 🌙 DARK MODE
+  const [mode, setMode] = useState("light");
+  const toggleDarkMode = () =>
+    setMode((prev) => (prev === "light" ? "dark" : "light"));
+
   const activeBoard = boards.find((b) => b.id === activeBoardId);
 
   const filteredBoard = activeBoard
@@ -199,7 +205,11 @@ export default function App() {
             ...board,
             tasks: [
               ...board.tasks,
-              { ...movedTask, status: "backlog", updatedAt: new Date().toISOString() }
+              {
+                ...movedTask,
+                status: "backlog",
+                updatedAt: new Date().toISOString()
+              }
             ]
           }
         : board
@@ -238,105 +248,116 @@ export default function App() {
   };
 
   return (
-    <DndContext
-      onDragEnd={(event) => {
-        const { active, over } = event;
-        if (!over) return;
+    <ThemeProvider theme={getTheme(mode)}>
+      <CssBaseline />
 
-        const taskId = active.id;
-        const fromBoardId = active.data.current.boardId;
+      <DndContext
+        onDragEnd={(event) => {
+          const { active, over } = event;
+          if (!over) return;
 
-        if (over.id.startsWith("board-")) {
-          const toBoardId = over.id.replace("board-", "");
-          if (fromBoardId !== toBoardId) {
-            handleMoveTaskToBoard(taskId, fromBoardId, toBoardId);
+          const taskId = active.id;
+          const fromBoardId = active.data.current.boardId;
+
+          if (over.id.startsWith("board-")) {
+            const toBoardId = over.id.replace("board-", "");
+            if (fromBoardId !== toBoardId) {
+              handleMoveTaskToBoard(taskId, fromBoardId, toBoardId);
+            }
+            return;
           }
-          return;
-        }
 
-        handleMoveTask(taskId, over.id, fromBoardId);
-      }}
-    >
-      <Box sx={{ display: "flex", height: "100vh" }}>
-        <SidebarBoards
-          boards={boards}
-          activeBoardId={activeBoardId}
-          onSelectBoard={setActiveBoardId}
-          onOpenNewBoard={() => setOpenNewBoard(true)}
-        />
-
-        {filteredBoard && (
-          <BoardView
-            board={filteredBoard}
-            sortMode={sortMode}
-            onChangeSortMode={setSortMode}
-            searchQuery={searchQuery}
-            onChangeSearch={setSearchQuery}
-            onOpenTask={(task) => {
-              setSelectedTask(task);
-              setOpenTaskModal(true);
-            }}
-            onAddTask={(status) => {
-              setNewTaskBoardId(activeBoardId);
-              setNewTaskStatus(status);
-              setOpenNewTaskModal(true);
-            }}
+          handleMoveTask(taskId, over.id, fromBoardId);
+        }}
+      >
+        <Box sx={{ display: "flex", height: "100vh" }}>
+          <SidebarBoards
+            boards={boards}
+            activeBoardId={activeBoardId}
+            onSelectBoard={setActiveBoardId}
+            onOpenNewBoard={() => setOpenNewBoard(true)}
           />
-        )}
 
-        <NewBoardModal
-          open={openNewBoard}
-          onClose={() => setOpenNewBoard(false)}
-          onCreate={({ name, icon }) => {
-            const newBoard = { id: crypto.randomUUID(), name, icon, tasks: [] };
-            setBoards([...boards, newBoard]);
-            setActiveBoardId(newBoard.id);
-          }}
-        />
+          {filteredBoard && (
+            <BoardView
+              board={filteredBoard}
+              sortMode={sortMode}
+              onChangeSortMode={setSortMode}
+              searchQuery={searchQuery}
+              onChangeSearch={setSearchQuery}
+              onOpenTask={(task) => {
+                setSelectedTask(task);
+                setOpenTaskModal(true);
+              }}
+              onAddTask={(status) => {
+                setNewTaskBoardId(activeBoardId);
+                setNewTaskStatus(status);
+                setOpenNewTaskModal(true);
+              }}
+              mode={mode}
+              onToggleDarkMode={toggleDarkMode}
+            />
+          )}
 
-        {/* EDIT TASK */}
-        {openTaskModal && (
-          <TaskModal
-            open={openTaskModal}
-            task={selectedTask}
-            onClose={() => setOpenTaskModal(false)}
-            onSave={(updatedTask) => {
-              setBoards((prev) =>
-                prev.map((board) =>
-                  board.id === activeBoardId
-                    ? {
-                        ...board,
-                        tasks: board.tasks.map((t) =>
-                          t.id === updatedTask.id
-                            ? {
-                                ...t,
-                                ...updatedTask,
-                                createdAt:
-                                  t.createdAt ||
-                                  updatedTask.createdAt ||
-                                  new Date().toISOString(),
-                                updatedAt: new Date().toISOString()
-                              }
-                            : t
-                        )
-                      }
-                    : board
-                )
-              );
+          <NewBoardModal
+            open={openNewBoard}
+            onClose={() => setOpenNewBoard(false)}
+            onCreate={({ name, icon }) => {
+              const newBoard = {
+                id: crypto.randomUUID(),
+                name,
+                icon,
+                tasks: []
+              };
+              setBoards([...boards, newBoard]);
+              setActiveBoardId(newBoard.id);
             }}
           />
-        )}
 
-        {/* CREATE TASK */}
-        {openNewTaskModal && (
-          <TaskModal
-            open={openNewTaskModal}
-            task={null}
-            onClose={() => setOpenNewTaskModal(false)}
-            onSave={handleCreateTask}
-          />
-        )}
-      </Box>
-    </DndContext>
+          {/* EDIT TASK */}
+          {openTaskModal && (
+            <TaskModal
+              open={openTaskModal}
+              task={selectedTask}
+              onClose={() => setOpenTaskModal(false)}
+              onSave={(updatedTask) => {
+                setBoards((prev) =>
+                  prev.map((board) =>
+                    board.id === activeBoardId
+                      ? {
+                          ...board,
+                          tasks: board.tasks.map((t) =>
+                            t.id === updatedTask.id
+                              ? {
+                                  ...t,
+                                  ...updatedTask,
+                                  createdAt:
+                                    t.createdAt ||
+                                    updatedTask.createdAt ||
+                                    new Date().toISOString(),
+                                  updatedAt: new Date().toISOString()
+                                }
+                              : t
+                          )
+                        }
+                      : board
+                  )
+                );
+              }}
+            />
+          )}
+
+          {/* CREATE TASK */}
+          {openNewTaskModal && (
+            <TaskModal
+              open={openNewTaskModal}
+              task={null}
+              onClose={() => setOpenNewTaskModal(false)}
+              onSave={handleCreateTask}
+            />
+          )}
+        </Box>
+      </DndContext>
+    </ThemeProvider>
   );
 }

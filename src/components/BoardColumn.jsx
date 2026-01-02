@@ -1,33 +1,11 @@
-import { Box, Typography, Button, Stack } from "@mui/material";
-import { useDroppable } from "@dnd-kit/core";
+import { Box, Typography, Stack } from "@mui/material";
 import TaskCard from "./TaskCard";
+import { useDroppable } from "@dnd-kit/core";
 
-export default function BoardColumn({
-    boardId,
-    title,
-    tasks,
-    status,
-    sortMode,
-    onOpenTask,
-    onAddTask
-}) {
-    const { setNodeRef } = useDroppable({ id: status });
-
-    const sortTasks = (tasks, mode) => {
-        if (mode === "priority") {
-        const order = { critical: 1, high: 2, normal: 3, low: 4 };
-        return [...tasks].sort((a, b) => order[a.priority] - order[b.priority]);
-        }
-        if (mode === "tag") {
-        return [...tasks].sort((a, b) => (a.tags[0] || "").localeCompare(b.tags[0] || ""));
-        }
-        if (mode === "title") {
-        return [...tasks].sort((a, b) => a.title.localeCompare(b.title));
-        }
-        return tasks;
-    };
-
-    const sortedTasks = sortTasks(tasks, sortMode);
+export default function BoardColumn({ title, status, tasks, boardId, onOpenTask }) {
+    const { setNodeRef } = useDroppable({
+        id: status
+    });
 
     return (
         <Box
@@ -36,16 +14,18 @@ export default function BoardColumn({
             backgroundColor: "background.paper",
             borderRadius: 2,
             p: 2,
-            minHeight: "70vh",
-            boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
+            minHeight: "80vh",
+            border: (theme) => `1px solid ${theme.palette.divider}`
         }}
         >
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 2 }}>
-            {title} ({sortedTasks.length})
+        {/* COLUMN TITLE */}
+        <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
+            {title}
         </Typography>
 
+        {/* TASKS */}
         <Stack spacing={2}>
-            {sortedTasks.map((task) => (
+            {tasks.map((task) => (
             <TaskCard
                 key={task.id}
                 task={task}
@@ -54,15 +34,6 @@ export default function BoardColumn({
             />
             ))}
         </Stack>
-
-        <Button
-            variant="outlined"
-            sx={{ mt: 2 }}
-            fullWidth
-            onClick={() => onAddTask(status)}
-        >
-            Add new task
-        </Button>
         </Box>
     );
 }

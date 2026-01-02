@@ -1,10 +1,16 @@
 import {
     Box,
-    Typography,
-    Grid,
     TextField,
-    MenuItem
+    MenuItem,
+    Button,
+    Typography,
+    Stack,
+    IconButton
 } from "@mui/material";
+
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import LightModeIcon from "@mui/icons-material/LightMode";
+
 import BoardColumn from "./BoardColumn";
 
 export default function BoardView({
@@ -14,93 +20,128 @@ export default function BoardView({
     searchQuery,
     onChangeSearch,
     onOpenTask,
-    onAddTask
+    onAddTask,
+    mode,
+    onToggleDarkMode
 }) {
-    if (!board) return null;
+    // Ordenar tareas según sortMode
+    const sortedTasks = [...board.tasks].sort((a, b) => {
+        if (sortMode === "priority") {
+        const order = { critical: 1, high: 2, normal: 3, low: 4 };
+        return order[a.priority] - order[b.priority];
+        }
+        if (sortMode === "title") {
+        return a.title.localeCompare(b.title);
+        }
+        if (sortMode === "createdAt") {
+        return new Date(a.createdAt) - new Date(b.createdAt);
+        }
+        if (sortMode === "updatedAt") {
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+        }
+        return 0;
+    });
 
-    const backlog = board.tasks.filter((t) => t.status === "backlog");
-    const inProgress = board.tasks.filter((t) => t.status === "inProgress");
-    const inReview = board.tasks.filter((t) => t.status === "inReview");
-    const completed = board.tasks.filter((t) => t.status === "completed");
+    // Agrupar tareas por columna
+    const columns = {
+        backlog: [],
+        inProgress: [],
+        inReview: [],
+        completed: []
+    };
+
+    sortedTasks.forEach((task) => {
+        columns[task.status].push(task);
+    });
 
     return (
-        <Box sx={{ flexGrow: 1, p: 3 }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-            <Typography variant="h5" sx={{ fontWeight: 700 }}>
-            {board.icon} {board.name}
-            </Typography>
-
-            <Box sx={{ display: "flex", gap: 2 }}>
+        <Box sx={{ flexGrow: 1, p: 3, overflow: "auto" }}>
+        {/* TOP BAR: Search + Sort + Add Task + Dark Mode */}
+        <Box
+            sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+            gap: 2
+            }}
+        >
+            {/* LEFT: Search */}
             <TextField
-                label="Search"
-                size="small"
-                value={searchQuery}
-                onChange={(e) => onChangeSearch(e.target.value)}
+            label="Search"
+            value={searchQuery}
+            onChange={(e) => onChangeSearch(e.target.value)}
+            sx={{ width: 260 }}
             />
 
+            {/* RIGHT: Sort + Add Task + Dark Mode */}
+            <Stack direction="row" spacing={2} alignItems="center">
             <TextField
                 select
                 label="Sort by"
-                size="small"
                 value={sortMode}
                 onChange={(e) => onChangeSortMode(e.target.value)}
+                sx={{ width: 160 }}
             >
                 <MenuItem value="priority">Priority</MenuItem>
-                <MenuItem value="tag">Tag</MenuItem>
                 <MenuItem value="title">Title</MenuItem>
+                <MenuItem value="createdAt">Created</MenuItem>
+                <MenuItem value="updatedAt">Updated</MenuItem>
             </TextField>
-            </Box>
+
+            <Button
+                variant="contained"
+                onClick={() => onAddTask("backlog")}
+            >
+                + Add Task
+            </Button>
+
+            <IconButton onClick={onToggleDarkMode}>
+                {mode === "light" ? <DarkModeIcon /> : <LightModeIcon />}
+            </IconButton>
+            </Stack>
         </Box>
 
-        <Grid container spacing={3}>
-            <Grid item xs={12} md={3}>
+        {/* COLUMNS */}
+        <Box
+            sx={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gap: 3
+            }}
+        >
             <BoardColumn
-                boardId={board.id}
-                title="Backlog"
-                tasks={backlog}
-                status="backlog"
-                sortMode={sortMode}
-                onOpenTask={onOpenTask}
-                onAddTask={onAddTask}
+            title="Backlog"
+            status="backlog"
+            tasks={columns.backlog}
+            boardId={board.id}
+            onOpenTask={onOpenTask}
             />
-            </Grid>
 
-            <Grid item xs={12} md={3}>
             <BoardColumn
-                boardId={board.id}
-                title="In Progress"
-                tasks={inProgress}
-                status="inProgress"
-                sortMode={sortMode}
-                onOpenTask={onOpenTask}
-                onAddTask={onAddTask}
+            title="In Progress"
+            status="inProgress"
+            tasks={columns.inProgress}
+            boardId={board.id}
+            onOpenTask={onOpenTask}
             />
-            </Grid>
 
-            <Grid item xs={12} md={3}>
             <BoardColumn
-                boardId={board.id}
-                title="In Review"
-                tasks={inReview}
-                status="inReview"
-                sortMode={sortMode}
-                onOpenTask={onOpenTask}
-                onAddTask={onAddTask}
+            title="In Review"
+            status="inReview"
+            tasks={columns.inReview}
+            boardId={board.id}
+            onOpenTask={onOpenTask}
             />
-            </Grid>
 
-            <Grid item xs={12} md={3}>
             <BoardColumn
-                boardId={board.id}
-                title="Completed"
-                tasks={completed}
-                status="completed"
-                sortMode={sortMode}
-                onOpenTask={onOpenTask}
-                onAddTask={onAddTask}
+            title="Completed"
+            status="completed"
+            tasks={columns.completed}
+            boardId={board.id}
+            onOpenTask={onOpenTask}
             />
-            </Grid>
-        </Grid>
+        </Box>
         </Box>
     );
 }
