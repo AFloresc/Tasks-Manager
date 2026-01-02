@@ -13,14 +13,86 @@ const initialBoards = [
     name: "Design Board",
     icon: "🎨",
     tasks: [
-      { id: "t1", title: "Investigate Framer Motion", tags: ["Concept"], status: "backlog", priority: "low" },
-      { id: "t2", title: "Implement CRUD operations", tags: ["Technical"], status: "backlog", priority: "critical" },
-      { id: "t3", title: "Edit tasks", tags: ["Technical", "Front-end"], status: "inProgress", priority: "high" },
-      { id: "t4", title: "View subset of tasks", tags: ["Technical", "Front-end"], status: "inProgress", priority: "normal" },
-      { id: "t5", title: "Delete tasks", tags: ["Technical", "Front-end"], status: "inReview", priority: "high" },
-      { id: "t6", title: "Add tasks", tags: ["Technical", "Front-end"], status: "inReview", priority: "normal" },
-      { id: "t7", title: "Basic App structure", tags: ["Technical", "Front-end"], status: "completed", priority: "high" },
-      { id: "t8", title: "Design Todo App", tags: ["Design"], status: "completed", priority: "low" }
+      {
+        id: "t1",
+        title: "Investigate Framer Motion",
+        tags: ["Concept"],
+        status: "backlog",
+        priority: "low",
+        comments: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: "t2",
+        title: "Implement CRUD operations",
+        tags: ["Technical"],
+        status: "backlog",
+        priority: "critical",
+        comments: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: "t3",
+        title: "Edit tasks",
+        tags: ["Technical", "Front-end"],
+        status: "inProgress",
+        priority: "high",
+        comments: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: "t4",
+        title: "View subset of tasks",
+        tags: ["Technical", "Front-end"],
+        status: "inProgress",
+        priority: "normal",
+        comments: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: "t5",
+        title: "Delete tasks",
+        tags: ["Technical", "Front-end"],
+        status: "inReview",
+        priority: "high",
+        comments: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: "t6",
+        title: "Add tasks",
+        tags: ["Technical", "Front-end"],
+        status: "inReview",
+        priority: "normal",
+        comments: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: "t7",
+        title: "Basic App structure",
+        tags: ["Technical", "Front-end"],
+        status: "completed",
+        priority: "high",
+        comments: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: "t8",
+        title: "Design Todo App",
+        tags: ["Design"],
+        status: "completed",
+        priority: "low",
+        comments: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
     ]
   },
   {
@@ -28,8 +100,26 @@ const initialBoards = [
     name: "Learning Board",
     icon: "📚",
     tasks: [
-      { id: "t9", title: "Learn Zustand", tags: ["Technical"], status: "backlog", priority: "high" },
-      { id: "t10", title: "Practice TypeScript", tags: ["Technical"], status: "inProgress", priority: "normal" }
+      {
+        id: "t9",
+        title: "Learn Zustand",
+        tags: ["Technical"],
+        status: "backlog",
+        priority: "high",
+        comments: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: "t10",
+        title: "Practice TypeScript",
+        tags: ["Technical"],
+        status: "inProgress",
+        priority: "normal",
+        comments: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
     ]
   }
 ];
@@ -105,7 +195,13 @@ export default function App() {
 
     const updatedBoards = boardsWithoutTask.map((board) =>
       board.id === toBoardId
-        ? { ...board, tasks: [...board.tasks, { ...movedTask, status: "backlog" }] }
+        ? {
+            ...board,
+            tasks: [
+              ...board.tasks,
+              { ...movedTask, status: "backlog", updatedAt: new Date().toISOString() }
+            ]
+          }
         : board
     );
 
@@ -127,7 +223,10 @@ export default function App() {
                   title: task.title,
                   tags: task.tags || [],
                   priority: task.priority || "normal",
-                  status: newTaskStatus
+                  status: newTaskStatus,
+                  comments: task.comments || [],
+                  createdAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString()
                 }
               ]
             }
@@ -208,7 +307,17 @@ export default function App() {
                     ? {
                         ...board,
                         tasks: board.tasks.map((t) =>
-                          t.id === updatedTask.id ? updatedTask : t
+                          t.id === updatedTask.id
+                            ? {
+                                ...t,
+                                ...updatedTask,
+                                createdAt:
+                                  t.createdAt ||
+                                  updatedTask.createdAt ||
+                                  new Date().toISOString(),
+                                updatedAt: new Date().toISOString()
+                              }
+                            : t
                         )
                       }
                     : board
