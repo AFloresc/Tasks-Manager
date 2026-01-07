@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DndContext, DragOverlay, closestCenter } from "@dnd-kit/core";
+import { DndContext, DragOverlay, rectIntersection } from "@dnd-kit/core";
 import TaskCard from "../TaskCard";
 
 export default function AppDndProvider({
@@ -21,16 +21,14 @@ export default function AppDndProvider({
   function handleDragEnd(event) {
     const { active, over } = event;
 
+    console.log("---- DRAG END ----");
+    console.log("active:", active);
+    console.log("over:", over);
+    console.log("over?.id:", over?.id);
+    console.log("over?.data?.current:", over?.data?.current);
+    console.log("------------------");
 
-        console.log("---- DRAG END ----");
-        console.log("active:", active);
-        console.log("over:", over);
-        console.log("over?.id:", over?.id);
-        console.log("over?.data?.current:", over?.data?.current);
-        console.log("------------------");
-
-
-        setActiveTask(null);
+    setActiveTask(null);
     setActiveBoardId(null);
 
     if (!over) return;
@@ -41,34 +39,25 @@ export default function AppDndProvider({
 
     const overType = over.data?.current?.type;
 
-    // -----------------------------------------
     // 1) DROP SOBRE UNA COLUMNA
-    // -----------------------------------------
     if (overType === "column") {
       const toBoardId = over.data.current.boardId;
 
-      // Extraemos el status real desde "boardId-status"
       const newStatus = over.id.split("-")[1];
 
-      // MISMO BOARD → mover dentro del board
       if (toBoardId === fromBoardId) {
         onMoveTask(fromBoardId, taskId, newStatus);
         return;
       }
 
-      // OTRO BOARD → mover entre boards
       onMoveTaskToBoard(fromBoardId, toBoardId, taskId, newStatus);
       return;
     }
 
-    // -----------------------------------------
-    // 2) DROP SOBRE EL BOARD (top bar)
-    // -----------------------------------------
+    // 2) DROP SOBRE UN BOARD (sidebar o top bar)
     if (overType === "board") {
-      // Extraemos el boardId real desde "board-<id>"
-      const toBoardId = over.id.replace("board-", "");
+      const toBoardId = over.data.current.boardId;
 
-      // Si es otro board → mover manteniendo el status
       if (toBoardId !== fromBoardId) {
         onMoveTaskToBoard(fromBoardId, toBoardId, taskId, fromStatus);
       }
@@ -79,7 +68,7 @@ export default function AppDndProvider({
 
   return (
     <DndContext
-      collisionDetection={closestCenter}
+      collisionDetection={rectIntersection}   // 👈🔥 FIX DEFINITIVO
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >

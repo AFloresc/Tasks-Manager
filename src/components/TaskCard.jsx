@@ -6,9 +6,18 @@ export default function TaskCard({ task, boardId, onClick }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: task.id,
     data: {
-      type: "task", // 👈 añado el type por claridad en DnD
-      task,
-      boardId
+      type: "task",
+
+      // 🔥 Getters dinámicos → siempre devuelven el valor actualizado
+      get task() {
+        return task;
+      },
+      get boardId() {
+        return boardId;
+      },
+      get status() {
+        return task.status;
+      }
     }
   });
 
