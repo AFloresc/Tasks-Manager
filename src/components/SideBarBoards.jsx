@@ -1,5 +1,6 @@
 import { Box, Typography, List, ListItemButton } from "@mui/material";
 import SidebarBoardItem from "./SideBoardItem";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 export default function SidebarBoards({
   boards,
@@ -33,6 +34,18 @@ export default function SidebarBoards({
           />
         ))}
       </List>
+
+      <SidebarBoardItem
+        key="trash"
+        board={{
+          id: "trash",
+          name: "Trash",
+          icon: <DeleteOutlineIcon />,   // 👈 ICONO MUI
+          tasks: []
+        }}
+        activeBoardId={activeBoardId}
+        onSelectBoard={onSelectBoard}
+      />
 
       <ListItemButton
         onClick={onOpenNewBoard}

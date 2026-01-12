@@ -14,6 +14,7 @@ import { initialBoards } from "./data/initialBoards";
 export default function App() {
   const {
     boards,
+    trash,
     activeBoardId,
     filteredBoard,
     selectBoard,
@@ -27,7 +28,10 @@ export default function App() {
     createTask,
     updateTask,
     moveTask,
-    moveTaskToBoard
+    moveTaskToBoard,
+
+    softDeleteTask,
+    restoreTask 
   } = useBoards(initialBoards);
 
   const [mode, setMode] = useState("light");
@@ -41,6 +45,7 @@ export default function App() {
       <AppDndProvider
         onMoveTask={moveTask}
         onMoveTaskToBoard={moveTaskToBoard}
+        onSoftDeleteTask={softDeleteTask}
       >
         <NewBoardModalController onCreate={createBoard}>
           {({ openNewBoard }) => (
@@ -53,6 +58,8 @@ export default function App() {
               {({ openTask }) => (
                 <MainLayout
                   boards={boards}
+                  trash={trash}
+                  onRestoreTask={restoreTask}
                   activeBoardId={activeBoardId}
                   onSelectBoard={selectBoard}
                   board={filteredBoard}

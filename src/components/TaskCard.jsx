@@ -8,16 +8,18 @@ export default function TaskCard({ task, boardId, onClick }) {
     data: {
       type: "task",
 
+      originBoardId: boardId, 
       // 🔥 Getters dinámicos → siempre devuelven el valor actualizado
       get task() {
         return task;
       },
-      get boardId() {
+      get boardIdDynamic() {
         return boardId;
       },
-      get status() {
-        return task.status;
-      }
+    get statusDynamic() {
+    return task.status;
+  }
+
     }
   });
 

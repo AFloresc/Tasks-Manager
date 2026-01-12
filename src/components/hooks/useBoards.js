@@ -13,6 +13,7 @@ export function useBoards(initialBoards) {
   };
 
   const [boards, setBoards] = useState(loadBoards);
+  const [trash, setTrash] = useState([]);          // 👈 NUEVO
   const [activeBoardId, setActiveBoardId] = useState(
     loadBoards()[0]?.id || null
   );
@@ -185,8 +186,82 @@ export function useBoards(initialBoards) {
     setActiveBoardId(toBoardId);
   };
 
+  // 🔥 SOFT DELETE TASK
+  const softDeleteTask = (fromBoardId, taskId, originalStatus) => {
+  setBoards((prevBoards) => {
+    let deletedTask = null;
+    let originalBoardName = null;
+
+    const updatedBoards = prevBoards.map((board) => {
+      if (board.id !== fromBoardId) return board;
+
+      originalBoardName = board.name;
+
+      const remaining = board.tasks.filter((t) => {
+        if (t.id === taskId) {
+          deletedTask = t;
+          return false;
+        }
+        return true;
+      });
+
+      return { ...board, tasks: remaining };
+    });
+
+    if (deletedTask) {
+      setTrash((prevTrash) => {
+        // 🚫 Evitar duplicados en trash
+        if (prevTrash.some((t) => t.id === deletedTask.id)) {
+          return prevTrash;
+        }
+
+        return [
+          ...prevTrash,
+          {
+            ...deletedTask,
+            originalBoardId: fromBoardId,
+            originalBoardName,      // 👈 guardamos el nombre del board
+            originalStatus
+          }
+        ];
+      });
+    }
+
+    return updatedBoards;
+  });
+};
+
+  // 🔥 RESTORE TASK
+  const restoreTask = (taskId) => {
+    setTrash((prevTrash) => {
+      const task = prevTrash.find((t) => t.id === taskId);
+      if (!task) return prevTrash;
+
+      setBoards((prevBoards) =>
+        prevBoards.map((board) =>
+          board.id === task.originalBoardId
+            ? {
+                ...board,
+                tasks: [
+                  ...board.tasks,
+                  {
+                    ...task,
+                    status: task.originalStatus,
+                    updatedAt: new Date().toISOString()
+                  }
+                ]
+              }
+            : board
+        )
+      );
+
+      return prevTrash.filter((t) => t.id !== taskId);
+    });
+  };
+
   return {
     boards,
+    trash,                 // 👈 NUEVO
     activeBoardId,
     filteredBoard,
     sortMode,
@@ -200,6 +275,9 @@ export function useBoards(initialBoards) {
     createTask,
     updateTask,
     moveTask,
-    moveTaskToBoard
+    moveTaskToBoard,
+
+    softDeleteTask,        // 👈 NUEVO
+    restoreTask            // 👈 NUEVO
   };
 }

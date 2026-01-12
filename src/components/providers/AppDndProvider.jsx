@@ -5,7 +5,8 @@ import TaskCard from "../TaskCard";
 export default function AppDndProvider({
   children,
   onMoveTask,
-  onMoveTaskToBoard
+  onMoveTaskToBoard,
+  onSoftDeleteTask
 }) {
   const [activeTask, setActiveTask] = useState(null);
   const [activeBoardId, setActiveBoardId] = useState(null);
@@ -34,15 +35,16 @@ export default function AppDndProvider({
     if (!over) return;
 
     const taskId = active.id;
-    const fromBoardId = active.data.current.boardId;
-    const fromStatus = active.data.current.task.status;
+    //const fromBoardId = active.data.current.boardId;
+    const fromBoardId = active.data.current.originBoardId;
+    //const fromStatus = active.data.current.task.status;
+    const fromStatus = active.data.current.status;
 
     const overType = over.data?.current?.type;
 
     // 1) DROP SOBRE UNA COLUMNA
     if (overType === "column") {
       const toBoardId = over.data.current.boardId;
-
       const newStatus = over.id.split("-")[1];
 
       if (toBoardId === fromBoardId) {
@@ -64,11 +66,17 @@ export default function AppDndProvider({
 
       return;
     }
+
+    // 3) DROP SOBRE TRASH
+    if (overType === "trash") {
+      onSoftDeleteTask(fromBoardId, taskId, fromStatus);
+      return;
+    }
   }
 
   return (
     <DndContext
-      collisionDetection={rectIntersection}   // 👈🔥 FIX DEFINITIVO
+      collisionDetection={rectIntersection}  // 👈 ÚNICO CAMBIO REAL
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >

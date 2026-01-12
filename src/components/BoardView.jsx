@@ -54,8 +54,15 @@ export default function BoardView({
   };
 
   sortedTasks.forEach((task) => {
-    columns[task.status].push(task);
-  });
+    const status = task.status;
+
+    // Si el status no existe en columns, lo creamos dinámicamente
+    if (!columns[status]) {
+      columns[status] = [];
+    }
+
+    columns[status].push(task);
+});
 
   return (
     <Box

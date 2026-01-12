@@ -1,4 +1,4 @@
-import { Typography, ListItemButton } from "@mui/material";
+import { Box, Typography, ListItemButton } from "@mui/material";
 import { useDroppable } from "@dnd-kit/core";
 
 export default function SidebarBoardItem({
@@ -6,17 +6,20 @@ export default function SidebarBoardItem({
   activeBoardId,
   onSelectBoard
 }) {
+  const isTrash = board.id === "trash";
+  
   const { setNodeRef, isOver } = useDroppable({
-    id: "sidebar-board-" + board.id,
+    id: isTrash ? "trash" : "sidebar-board-" + board.id,
     data: {
-      type: "board",
+      type: isTrash ? "trash" : "board",
       boardId: board.id
     }
   });
 
+
   return (
     <ListItemButton
-      ref={setNodeRef} // 👈 EL DROPPABLE DEBE ESTAR AQUÍ
+      ref={setNodeRef}
       selected={board.id === activeBoardId}
       onClick={() => onSelectBoard(board.id)}
       sx={(theme) => ({
@@ -25,7 +28,6 @@ export default function SidebarBoardItem({
         width: "100%",
         transition: "background-color 0.15s ease",
 
-        // 👇 FEEDBACK CUANDO UNA TAREA ESTÁ ENCIMA
         backgroundColor: isOver
           ? theme.palette.primary.light
           : board.id === activeBoardId
@@ -47,7 +49,10 @@ export default function SidebarBoardItem({
         }
       })}
     >
-      <Typography sx={{ mr: 1 }}>{board.icon}</Typography>
+      <Box sx={{ mr: 1, display: "flex", alignItems: "center" }}>
+        {board.icon}
+      </Box>
+
       <Typography>{board.name}</Typography>
     </ListItemButton>
   );
