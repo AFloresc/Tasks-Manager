@@ -55,7 +55,21 @@ A modular, scalable task‑management application built with **React**, **MUI**,
 
 ## 📁 Project Structure
 
-src/ components/ SidebarBoards/ BoardView/ BoardColumn/ TaskCard/ TaskModal/ TrashView/ hooks/ utils/ router/ services/ theme/
+```plaintext
+src/
+    components/
+    SidebarBoards/
+    BoardView/
+    BoardColumn/
+    TaskCard/
+    TaskModal/
+    TrashView/
+    hooks/
+    utils/
+    router/
+    services/
+    theme/
+```
 
 Each folder contains self‑contained, reusable modules with clear API contracts.
 
