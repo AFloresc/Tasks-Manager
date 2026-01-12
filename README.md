@@ -86,7 +86,7 @@ Each folder contains self‑contained, reusable modules with clear API contracts
 
 ## 🧪 Validation & Data Integrity
 
--   All critical operations are validated server‑side.
+-   All critical operations are validated client‑side, uses vite.
 -   No client‑side assumptions about boardId, columnId, or task state.
 -   Designed to prevent race conditions and inconsistent UI states.
 
