@@ -1,17 +1,56 @@
-# React + Vite
+# 🗂️ TasksManager App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modular, scalable task‑management application built with **React**, **MUI**, and a fully validated backend architecture. Designed for multi‑board workflows, drag‑and‑drop interactions, and future‑proof extensibility.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
 
-## React Compiler
+### 🧩 Modular Architecture
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+-   Every component is isolated, testable, and designed for long‑term maintainability.
+-   Clear separation between **presentation**, **state**, and **backend validation**.
 
-## Expanding the ESLint configuration
+### 📋 Multiple Boards
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# Tasks-Manager
+-   Create, rename, and manage independent boards.
+-   Each board contains its own columns, tasks, and trash system.
+
+### ↕️ Drag & Drop
+
+-   Drag tasks between columns.
+-   Drag tasks between boards.
+-   Fully server‑validated to ensure data integrity.
+-   Smooth, predictable UX with no regressions.
+
+### 🗑️ Soft‑Delete / Trash System
+
+-   Drag a task to the trash icon or delete it from the modal.
+-   Each board has its own recoverable trash.
+-   Restore tasks to their original column with full state integrity.
+
+### 🧭 Clean Routing
+
+-   URL‑driven board navigation.
+-   Router logic fully aligned with real backend data structures.
+
+### 🎨 Premium UI
+
+-   Built with **MUI**, **Framer Motion**, and a consistent design system.
+-   Responsive layout with elegant spacing, typography, and transitions.
+
+---
+
+## 🏗️ Tech Stack
+
+| Layer    | Technology                                        |
+| -------- | ------------------------------------------------- |
+| Frontend | React, MUI, Framer Motion                         |
+| State    | Custom hooks, modular stores                      |
+| Backend  | Go (or your backend of choice), strict validation |
+| DnD      | @hello-pangea/dnd                                 |
+| Routing  | React Router                                      |
+
+---
+
+## 📁 Project Structure
