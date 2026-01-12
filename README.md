@@ -54,3 +54,28 @@ A modular, scalable task‑management application built with **React**, **MUI**,
 ---
 
 ## 📁 Project Structure
+
+src/ components/ SidebarBoards/ BoardView/ BoardColumn/ TaskCard/ TaskModal/ TrashView/ hooks/ utils/ router/ services/ theme/
+
+Each folder contains self‑contained, reusable modules with clear API contracts.
+
+---
+
+## 🧪 Validation & Data Integrity
+
+-   All critical operations are validated server‑side.
+-   No client‑side assumptions about boardId, columnId, or task state.
+-   Designed to prevent race conditions and inconsistent UI states.
+
+---
+
+## 🛣️ Roadmap
+
+-   Multi‑camera support for attachments
+-   Metrics dashboard
+-   Offline mode
+-   Real‑time collaboration
+-   Board templates
+-   Advanced filtering & search
+
+---
