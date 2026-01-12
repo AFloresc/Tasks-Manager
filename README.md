@@ -57,18 +57,30 @@ A modular, scalable task‑management application built with **React**, **MUI**,
 
 ```plaintext
 src/
-    components/
-    SidebarBoards/
-    BoardView/
-    BoardColumn/
-    TaskCard/
-    TaskModal/
-    TrashView/
-    hooks/
-    utils/
-    router/
-    services/
-    theme/
+└── components/
+    ├── hooks/
+    │   └── useBoards.js
+    ├── layouts/
+    │   └── MainLayout.jsx
+    ├── modals/
+    ├── providers/
+    │   ├── AppDndProvider.jsx
+    │   ├── test copy.json
+    │   ├── test.json
+    │   ├── BoardColumn.jsx
+    │   ├── BoardView.jsx
+    │   ├── NewBoardModal.jsx
+    │   ├── SideBarBoards.jsx
+    │   ├── SideBoardItem.jsx
+    │   ├── TaskCard.jsx
+    │   ├── TaskModal.jsx
+    │   └── TrashView.jsx
+    ├── data/
+    ├── App copy.jsx
+    ├── App.css
+    ├── App.jsx
+    ├── index.css
+    └── main.js
 ```
 
 Each folder contains self‑contained, reusable modules with clear API contracts.
